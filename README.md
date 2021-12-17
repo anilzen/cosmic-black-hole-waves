@@ -59,7 +59,7 @@ f H = 2 \frac{r-r_e}{r_c-r_e} - 1.
 $$ --> 
 
 <div align="center"><img style="background: white;" src="https://render.githubusercontent.com/render/math?math=f%20H%20%3D%202%20%5Cfrac%7Br-r_e%7D%7Br_c-r_e%7D%20-%201."></div>
-The metric is regular and purely "outgoing" both at the black hole horizon and the cosmological horizon
+The hyperboloidal metric is regular and purely "outgoing" both at the black hole horizon and the cosmological horizon
 <!-- $$ 
 ds^2 = - f dt^2 - 2 \left(2 \frac{r-r_e}{r_c-r_e} - 1\right) d\tau dr + \frac{4 \ell^2 r}{(r_c-r_e)^2 (r-r_0)} dr^2 + r^2 d\omega^2. 
 $$ --> 
