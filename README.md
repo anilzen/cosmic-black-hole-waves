@@ -12,11 +12,11 @@ ds^2 = - f dt^2 + \frac{1}{f} dr^2 + r^2 d\omega^2.
 $$ --> 
 <div align="center"><img style="background: white;" src="https://render.githubusercontent.com/render/math?math=ds%5E2%20%3D%20-%20f%20dt%5E2%20%2B%20%5Cfrac%7B1%7D%7Bf%7D%20dr%5E2%20%2B%20r%5E2%20d%5Comega%5E2."></div>
 Introduce hyperboloidal time
-<!-- $$ 
-\tau = t - h(r)$$, \qquad H(r):= \frac{dh}{dr}.
+<!-- $$
+\tau = t - h(r), \qquad H(r):= \frac{dh}{dr}.
 $$ --> 
 
-<div align="center"><img style="background: white;" src="https://render.githubusercontent.com/render/math?math=%5Ctau%20%3D%20t%20-%20h(r)%24%24%2C%20%5Cqquad%20H(r)%3A%3D%20%5Cfrac%7Bdh%7D%7Bdr%7D."></div>
+<div align="center"><img style="background: white;" src="https://render.githubusercontent.com/render/math?math=%5Ctau%20%3D%20t%20-%20h(r)%2C%20%5Cqquad%20H(r)%3A%3D%20%5Cfrac%7Bdh%7D%7Bdr%7D."></div>
 to get the metric
 <!-- $$ 
 ds^2 = - f d\tau^2 - 2 fH d\tau dr + \frac{1}{f}\left(1-f^2 H^2\right) dr^2 + r^2 d\omega^2.
