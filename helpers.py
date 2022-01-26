@@ -43,6 +43,26 @@ def diff2_o4(u, dx):
     d2u /= 12.*dx**2
     return d2u
 
+def rk4(cur, coefs, dt, dx, tds):
+    """
+    Runge--Kutta time integration
+    cur   : a 2 x N matrix containing the function and its time derivative
+    coefs : a 5 x N matrix containing the coefficients for the wave equation
+    dt    : the time grid size
+    dx    : the spatial grid size
+    tds   : downsampling factor in time
+    returns nex, the evolved function and its time derivative, same format as cur
+    """
+    nex = np.zeros_like(cur)
+    nex[:, :] = cur
+    # Runge-Kutta RK4
+    for i in range(tds):
+        k1 = dt * wave1drhs(nex,        coefs, dx)
+        k2 = dt * wave1drhs(nex+0.5*k1, coefs, dx)
+        k3 = dt * wave1drhs(nex+0.5*k2, coefs, dx)
+        k4 = dt * wave1drhs(nex+k3,     coefs, dx)
+        nex += (k1+2.*(k2+k3)+k4)/6.
+    return nex
 
 def gaussian(x, x0, sigma):
     """
@@ -65,51 +85,37 @@ def gaussian_spti(x, t, x0, t0, sigma):
     """
     return gaussian(t, t0, sigma)*gaussian(x, x0, sigma)
 
-
-def rk4(cur, coefs, dt, dx, tds):
-    """
-    Runge--Kutta time integration
-    cur   : a 2 x N matrix containing the function and its time derivative
-    coefs : a 5 x N matrix containing the coefficients for the wave equation
-    dt    : the time grid size
-    dx    : the spatial grid size
-    tds   : downsampling factor in time
-    returns nex, the evolved function and its time derivative, same format as cur
-    """
-    nex = np.zeros_like(cur)
-    nex[:, :] = cur
-    # Runge-Kutta RK4
-    for i in range(tds):
-        k1 = dt * wave1drhs(nex,        coefs, dx)
-        k2 = dt * wave1drhs(nex+0.5*k1, coefs, dx)
-        k3 = dt * wave1drhs(nex+0.5*k2, coefs, dx)
-        k4 = dt * wave1drhs(nex+k3,     coefs, dx)
-        nex += (k1+2.*(k2+k3)+k4)/6.
-    return nex
-
-
-def set_coefs(x, ell):
+def set_coefs(r, ell, re, rc):
     """
     c0 : A_tr
     c1 : A_rr
     c2 : B_t
     c3 : B_r
     c4 : C
-    Domain [0,1], height function has 4*log(r+6) term in it.
     """
-    coefs = np.zeros((5, len(x)))
-    # Coefficients for the time independent RWZ equation
-    coefs[0, :] = ((-2 + x)*(2 - 9*x + 5*x**2))/(8.*(-5 + 3*x))
-    coefs[1, :] = -((-2 + x)**2*(-1 + x)**2*x)/(32.*(-5 + 3*x))
-    coefs[2, :] = ((-5 + x)*(-1 + x))/(4.*(1 + x)*(-5 + 3*x))
-    coefs[3, :] = -((-2 + x)**2*(-1 + x)*(-1 + 3*x +
-                                          2*x**2))/(32.*(1 + x)*(-5 + 3*x))
-    # For scalar perturbations
-    # coefs[4,:] = ((-2 + x)**2*(1 + ell*(1 + ell) - \
-    #                            x + ell*(1 + ell)*x))/(16.*(1+x)**2*(-5+3*x))
-    # For gravitational perturbations
-    coefs[4, :] = ((-2 + x)**2*(-3 + ell*(1 + ell) +
-                                3*x + ell*(1 + ell)*x))/(16.*(1+x)**2*(-5+3*x))
+    coefs = np.zeros((5, len(r)))
+
+    # Coefficients for Schwarzschild-de Sitter wave equation in hyperboloidal coordinates
+    ldS2 = re**2 + re*rc + rc**2
+
+    coefs[0, :] = -0.5*((2*r - rc - re)*(rc - re)*(r + rc + re))/(ldS2*r)
+    coefs[1, :] = -0.25*((r - rc)*(r - re)*(rc - re)**2*(r + rc + re)**2)/(ldS2**2*r**2)
+    coefs[2, :] = -0.5*((rc - re)*(r + rc + re))/(ldS2*r)
+    coefs[3, :] = ((rc - re)**2*(r + rc + re)*(-2*r**3 + rc*re*(rc + re)))/(4.*ldS2**2*r**3)
+    coefs[4, :] = -0.25*((rc - re)**2*(r + rc + re)*(ell**2*ldS2*r - 2*r**3 + rc*re*(rc + re)))/(ldS2**2*r**4)
+
+    # # Coefficients for the time independent RWZ equation
+    # coefs[0, :] = ((-2 + x)*(2 - 9*x + 5*x**2))/(8.*(-5 + 3*x))
+    # coefs[1, :] = -((-2 + x)**2*(-1 + x)**2*x)/(32.*(-5 + 3*x))
+    # coefs[2, :] = ((-5 + x)*(-1 + x))/(4.*(1 + x)*(-5 + 3*x))
+    # coefs[3, :] = -((-2 + x)**2*(-1 + x)*(-1 + 3*x +
+    #                                       2*x**2))/(32.*(1 + x)*(-5 + 3*x))
+    # # For scalar perturbations
+    # # coefs[4,:] = ((-2 + x)**2*(1 + ell*(1 + ell) - \
+    # #                            x + ell*(1 + ell)*x))/(16.*(1+x)**2*(-5+3*x))
+    # # For gravitational perturbations
+    # coefs[4, :] = ((-2 + x)**2*(-3 + ell*(1 + ell) +
+    #                             3*x + ell*(1 + ell)*x))/(16.*(1+x)**2*(-5+3*x))
     return coefs
 
 
