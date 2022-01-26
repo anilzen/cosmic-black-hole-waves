@@ -104,14 +104,20 @@ We consider the scalar wave equation
 After decomposing in spherical modes and writing out
 \[ \partial_{{t}}^{\,2}\psi  = f^2 \partial_r^2 \psi + f \left(\frac{2f}{r}+f'\right) \partial_r \psi - \frac{f \ell^2}{r^2}. \]
 We rescale by $r$ via $u:=\psi/r$ to get
-\[ \partial_{{t}}^{\,2}u  = f^2 \partial_r^2 u + f f' \partial_r \psi - \frac{f}{r^2} (r f' + \ell^2). \]
-
-Now perform the time transformation
-\[ \tau = t-h(r) \quad \Rightarrow \quad \partial_r = \partial_r - H \partial_\tau \]
-Divide the transformed equation by $f$ to get
-\[ \frac{1-f^2H^2}{f} \partial_\tau^2 u = - 2 fH \partial_r\partial_\tau u + f \partial_r^2 u - (f H)' \partial_\tau u + f'\partial_r u -\frac{1}{r^2} (r f' + k^2 ). \]
-
-
+\[ \partial_{{t}}^{\,2}u  = f^2 \partial_r^2 u + f f' \partial_r u - \frac{f}{r^2} (r f' + \ell^2). \]
+Transforming into the tortoise coordinate gives us
+\[ \partial_{{t}}^{\,2}u  = \partial_{r_\ast}^2 u  - \frac{f}{r^2} (r f' + \ell^2). \]
+Now perform the hyperboloidal tranformation
+\[ \tau = t-\sqrt{1+r_\ast^2} \]
+in combination with compactification
+\[ r_\ast = \frac{\rho_\ast}{\Omega} \quad {\rm with} \quad \Omega=\frac{1-\rho_\ast^2}{2} \]
+The hyperboloidal transformation reads in compactifying coordinates
+\[ \tau = t - \frac{1+\rho_\ast^2}{1-\rho_\ast^2}\]
+The derivative operators transform as
+\[ \partial_\tau = \partial_t, \qquad \partial_{r_\ast} = \frac{2}{1+\rho^2} \left(-\rho \partial_\tau + \Omega^2 \partial_{\rho_\ast}\right)  \]
+The resulting equation reads then
+\[ -\partial_\tau^2 - 2 \rho \partial_\tau \partial_\rho + \Omega^2 \partial_\rho^2 + \frac{\Omega}{1+\rho^2}\left(-2 \partial_\tau + \rho (3+\rho^2) \partial_\rho\right)=
+\frac{f}{2\Omega^2 r^2}(r f'+\ell^2)(1+\rho^2). \]
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
