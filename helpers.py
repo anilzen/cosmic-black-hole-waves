@@ -95,14 +95,34 @@ def set_coefs(r, ell, re, rc):
     """
     coefs = np.zeros((5, len(r)))
 
-    # Coefficients for Schwarzschild-de Sitter wave equation in hyperboloidal coordinates
-    ldS2 = re**2 + re*rc + rc**2
+    # def r_of_rst(rst, r_e, r_c):
+    #     l2, M, r_0, kappa_e, kappa_c, kappa_0 = vals(r_e,r_c)
+    #     f = lambda r: rst-( 0.5/kappa_e*log(r/r_e-1)-0.5/kappa_c*log(1-r/r_c)+0.5/kappa_0*log(1-r/r_0) )
+    #     rval = brentq(f,r_e+1e-14,r_c-1e-14)
+    #     return rval
 
-    coefs[0, :] = -0.5*((2*r - rc - re)*(rc - re)*(r + rc + re))/(ldS2*r)
-    coefs[1, :] = -0.25*((r - rc)*(r - re)*(rc - re)**2*(r + rc + re)**2)/(ldS2**2*r**2)
-    coefs[2, :] = -0.5*((rc - re)*(r + rc + re))/(ldS2*r)
-    coefs[3, :] = ((rc - re)**2*(r + rc + re)*(-2*r**3 + rc*re*(rc + re)))/(4.*ldS2**2*r**3)
-    coefs[4, :] = -0.25*((rc - re)**2*(r + rc + re)*(ell**2*ldS2*r - 2*r**3 + rc*re*(rc + re)))/(ldS2**2*r**4)
+    # def rgrid_from_rstgrid(rstgrid,r_e, r_c):
+    #     rgrid=np.zeros_like(rstgrid)
+    #     for i,rst in enumerate(rstgrid):
+    #         rgrid[i]=r_of_rst(rst, r_e, r_c)
+    #     return rgrid
+
+
+    # Coefficients for Schwarzschild-de Sitter wave equation in new hyperboloidal coordinates
+    coefs[0, :] = -2*r
+    coefs[1, :] = (1-r**2)**2/4.
+    coefs[2, :] = -(1-r**2)/(1+r**2)
+    coefs[3, :] = -0.5*(1-r**2)*r*(3.+r**2)/(1+r**2)
+    coefs[4, :] = 0.# This one's a bit hard. Try without it first.
+
+    # # Coefficients for Schwarzschild-de Sitter wave equation in old hyperboloidal coordinates
+    # ldS2 = re**2 + re*rc + rc**2
+
+    # coefs[0, :] = -0.5*((2*r - rc - re)*(rc - re)*(r + rc + re))/(ldS2*r)
+    # coefs[1, :] = -0.25*((r - rc)*(r - re)*(rc - re)**2*(r + rc + re)**2)/(ldS2**2*r**2)
+    # coefs[2, :] = -0.5*((rc - re)*(r + rc + re))/(ldS2*r)
+    # coefs[3, :] = ((rc - re)**2*(r + rc + re)*(-2*r**3 + rc*re*(rc + re)))/(4.*ldS2**2*r**3)
+    # coefs[4, :] = -0.25*((rc - re)**2*(r + rc + re)*(ell**2*ldS2*r - 2*r**3 + rc*re*(rc + re)))/(ldS2**2*r**4)
 
     # # Coefficients for the time independent RWZ equation
     # coefs[0, :] = ((-2 + x)*(2 - 9*x + 5*x**2))/(8.*(-5 + 3*x))
@@ -148,13 +168,13 @@ def wave1dsolve(initial, coefs, dx, dt, tds, nsteps):
     coefs   : the coefficients of the wave equation
     dx      : the spatial grid size
     dt      : the time grid size
-    nsteps  : the number of time steps to make
+    nsteps  : the number of time steps to store
     returns data, the solution in the form of an nsteps x 2 x N array
     """
     data = np.zeros(((nsteps+1,)+initial.shape))
     data[0, :, :] = initial
     for i in range(1, nsteps+1):
         data[i, :, :] = rk4(data[i-1, :, :], coefs, dt, dx, tds)
-        print("wave1dsolve(): step "+str(i))
+        # print("wave1dsolve(): step "+str(i))
     print("Finished evolution at t = "+str(dt*nsteps*tds))
     return data

@@ -24,9 +24,24 @@
 %\maketitle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Wave equation on de Sitter spacetime}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Treatment of the origin}
+
+We want to solve the following equation for the unknown $u(r,t)$ using finite differences
+\be\label{eq:spherical_wave} \partial_t u = \partial_r u + \frac{2}{r} u,\ee
+on the domain $r\in[0,R]$. Spherical symmetry implies the following boundary condition at the origin 
+\be\label{eq:spherical_bc} \partial_r u(0,t) = 0.\ee
+One might be inclined to directly discretize Eq.~\eqref{eq:spherical_wave} and then impose the boundary condition Eq.~\eqref{eq:spherical_bc} in a one-sided derivative operator. It turns out that this approach is numerically unstable. Instead, we use the following identity
+\[ \frac{u}{r} =  \partial_r u - r \, \partial_r \left(\frac{u}{r}\right), \]
+to rewrite Eq.~\eqref{eq:spherical_wave} as
+\[  \partial_t u = 3 \partial_r u - 2 r\, \partial_r \left( \frac{u}{r} \right). \]
+Of course, the division by $r$ is still there, but now the discretization with the boundary condition \eqref{eq:spherical_bc} is stable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Wave equation on Schwarzschild-de Sitter spacetime}
+\section{Wave equation on Schwarzschild-de Sitter spacetime}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The Schwarzschild-de Sitter (SdS) metric on the static patch
 \begin{equation}\label{eq:ssds}
@@ -114,11 +129,12 @@ in combination with compactification
 The hyperboloidal transformation reads in compactifying coordinates
 \[ \tau = t - \frac{1+\rho_\ast^2}{1-\rho_\ast^2}\]
 The derivative operators transform as
-\[ \partial_\tau = \partial_t, \qquad \partial_{r_\ast} = \frac{2}{1+\rho^2} \left(-\rho \partial_\tau + \Omega^2 \partial_{\rho_\ast}\right)  \]
+\[ \partial_\tau = \partial_t, \qquad \partial_{r_\ast} = \frac{2}{1+\rho_\ast^2} \left(-\rho_\ast \partial_\tau + \Omega^2 \partial_{\rho_\ast}\right)  \]
 The resulting equation reads then
-\[ -\partial_\tau^2 - 2 \rho \partial_\tau \partial_\rho + \Omega^2 \partial_\rho^2 + \frac{\Omega}{1+\rho^2}\left(-2 \partial_\tau + \rho (3+\rho^2) \partial_\rho\right)=
-\frac{f}{2\Omega^2 r^2}(r f'+\ell^2)(1+\rho^2). \]
-
+\[ -\partial_\tau^2 - 2 \rho_\ast \partial_\tau \partial_{\rho_\ast} + \Omega^2 \partial_{\rho_\ast}^2 
+- \frac{\Omega}{1+\rho_\ast^2}\left(2 \partial_\tau + \rho_\ast (3+\rho_\ast^2) \partial_{\rho_\ast}\right)=
+\frac{f (1+\rho_\ast^2)}{4\Omega^2 r^2}(r f'+\ell^2). \]
+Note that $\Omega^2 r^2$ is regular at both infinities, so we can define $\rho = \Omega^2 r^2$ which lives on the same domain as $\rho_\ast\in[-1,1]$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

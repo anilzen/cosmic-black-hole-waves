@@ -1,8 +1,8 @@
 from helpers import *
 
 # The grid
-re = 1
-rc = 10
+re = -1
+rc = 1
 n = 251                  # spatial grid points
 x = np.linspace(re, rc, n)     # the grid
 hgx = (rc-re)/(n-1)      # spatial grid spacing
