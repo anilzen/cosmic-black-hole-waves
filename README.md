@@ -9,6 +9,8 @@ The code uses horizon-penetrating hyperboloidal coordinates in the static patch 
 
 This is a simple Python code using [numpy](https://numpy.org/) for vectorized computations and [matplotlib](https://matplotlib.org/) for plots. The essential functionality is in `helpers.py`. We run the code and plot the result with `driver.py`.
 
+$$R_{\mu\nu}=\kappa$$
+
 We solve the 1+1 wave equation using Method of Lines with 4th order one-sided finite difference operators in space (`diff1_o4`, `diff2_o4`) and 4th order Runge-Kutta integration in time (`rk4`). Initial data is a Gaussian package (`gaussian`). The right hand side of the wave equation with generic but time-independent coefficients is in `wave1drhs`. The coefficients are set in `set_coefs`. A loop in `wave1dsolve` solves the equation step by step until the final time.
 
 ## Formalism
