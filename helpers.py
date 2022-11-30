@@ -1,3 +1,4 @@
+from re import L
 import numpy as np
 
 
@@ -13,9 +14,13 @@ def diff1_o4(u, dx):
     # sided differences at the left boundary
     du[0] = -25.*u[0]+48.*u[1]-36.*u[2]+16.*u[3]-3.*u[4]
     du[1] = -3.*u[0]-10.*u[1]+18.*u[2] - 6.*u[3] + u[4]
+
+
     # sided differences at the right boundary
     du[-1] = 25.*u[-1]-48.*u[-2]+36.*u[-3]-16.*u[-4]+3.*u[-5]
     du[-2] = 3.*u[-1]+10.*u[-2]-18.*u[-3] + 6.*u[-4] - u[-5]
+
+
     # centered differences in the bulk
     du[2:-2] = -u[4:]+8.*u[3:-1]-8.*u[1:-3]+u[:-4]
     # divide by cell size
@@ -35,8 +40,10 @@ def diff2_o4(u, dx):
     # one-sided differences at the boundaries
     d2u[0] = 45.*u[0]-154.*u[1]+214.*u[2]-156.*u[3]+61.*u[4]-10.*u[5]
     d2u[1] = 10.*u[0] - 15.*u[1] - 4.*u[2] + 14.*u[3] - 6.*u[4] + u[5]
+
     d2u[-1] = 45.*u[-1]-154.*u[-2]+214.*u[-3]-156.*u[-4]+61.*u[-5]-10.*u[-6]
     d2u[-2] = 10.*u[-1] - 15.*u[-2] - 4.*u[-3] + 14.*u[-4] - 6.*u[-5] + u[-6]
+
     # centered differences in the bulk
     d2u[2:-2] = -u[4:]+16.*u[3:-1]-30.*u[2:-2]+16.*u[1:-3]-u[:-4]
     # divide by cell size
@@ -85,7 +92,7 @@ def gaussian_spti(x, t, x0, t0, sigma):
     """
     return gaussian(t, t0, sigma)*gaussian(x, x0, sigma)
 
-def set_coefs(r, ell, re, rc):
+def set_coefs(r, ell, re=1, rc=10, L=1,coord = 'Parikh',metric = 'dS'):
     """
     c0 : A_tr
     c1 : A_rr
@@ -95,34 +102,31 @@ def set_coefs(r, ell, re, rc):
     """
     coefs = np.zeros((5, len(r)))
 
-    # def r_of_rst(rst, r_e, r_c):
-    #     l2, M, r_0, kappa_e, kappa_c, kappa_0 = vals(r_e,r_c)
-    #     f = lambda r: rst-( 0.5/kappa_e*log(r/r_e-1)-0.5/kappa_c*log(1-r/r_c)+0.5/kappa_0*log(1-r/r_0) )
-    #     rval = brentq(f,r_e+1e-14,r_c-1e-14)
-    #     return rval
+    # Coefficients for Schwarzschild-de Sitter wave equation in hyperboloidal coordinates
+    if metric == 'dS':
+        if (coord == 'P'):
+            coefs[0, :] = 2*r/L
+            coefs[1, :] = 1-r**2/L**2
+            coefs[2, :] = -1/L
+            coefs[3, :] = -2*r/L**2
+            coefs[4, :] = -2/L**2 #+ ell**2/r**2
+        elif (coord == 'E'):
+            coefs[0, :] = 2*r**2/(L**2+r**2)
+            coefs[1, :] = -1 + 2*L**2/(L**2+r**2)
+            coefs[2, :] = -2*r/(L**2+r**2)
+            coefs[3, :] = -2*r/(L**2+r**2)
+            coefs[4, :] = (ell**2*L**2 -2*r**2)/(L**2*r**2 + r**4)
+    elif metric == 'SdS':
+        ldS2 = re**2 + re*rc + rc**2
+        if (coord == 'choice1'):
+            ## old ones
+            coefs[0, :] = -0.5*((2*r - rc - re)*(rc - re)*(r + rc + re))/(ldS2*r)
+            coefs[1, :] = -0.25*((r - rc)*(r - re)*(rc - re)**2*(r + rc + re)**2)/(ldS2**2*r**2)
+            coefs[2, :] = -0.5*((rc - re)*(r + rc + re))/(ldS2*r)
+            coefs[3, :] = ((rc - re)**2*(r + rc + re)*(-2*r**3 + rc*re*(rc + re)))/(4.*ldS2**2*r**3)
+            coefs[4, :] = -0.25*((rc - re)**2*(r + rc + re)*(ell**2*ldS2*r - 2*r**3 + rc*re*(rc + re)))/(ldS2**2*r**4)
 
-    # def rgrid_from_rstgrid(rstgrid,r_e, r_c):
-    #     rgrid=np.zeros_like(rstgrid)
-    #     for i,rst in enumerate(rstgrid):
-    #         rgrid[i]=r_of_rst(rst, r_e, r_c)
-    #     return rgrid
 
-
-    # Coefficients for Schwarzschild-de Sitter wave equation in new hyperboloidal coordinates
-    coefs[0, :] = -2*r
-    coefs[1, :] = (1-r**2)**2/4.
-    coefs[2, :] = -(1-r**2)/(1+r**2)
-    coefs[3, :] = -0.5*(1-r**2)*r*(3.+r**2)/(1+r**2)
-    coefs[4, :] = 0.# This one's a bit hard. Try without it first.
-
-    # # Coefficients for Schwarzschild-de Sitter wave equation in old hyperboloidal coordinates
-    # ldS2 = re**2 + re*rc + rc**2
-
-    # coefs[0, :] = -0.5*((2*r - rc - re)*(rc - re)*(r + rc + re))/(ldS2*r)
-    # coefs[1, :] = -0.25*((r - rc)*(r - re)*(rc - re)**2*(r + rc + re)**2)/(ldS2**2*r**2)
-    # coefs[2, :] = -0.5*((rc - re)*(r + rc + re))/(ldS2*r)
-    # coefs[3, :] = ((rc - re)**2*(r + rc + re)*(-2*r**3 + rc*re*(rc + re)))/(4.*ldS2**2*r**3)
-    # coefs[4, :] = -0.25*((rc - re)**2*(r + rc + re)*(ell**2*ldS2*r - 2*r**3 + rc*re*(rc + re)))/(ldS2**2*r**4)
 
     # # Coefficients for the time independent RWZ equation
     # coefs[0, :] = ((-2 + x)*(2 - 9*x + 5*x**2))/(8.*(-5 + 3*x))
@@ -168,13 +172,13 @@ def wave1dsolve(initial, coefs, dx, dt, tds, nsteps):
     coefs   : the coefficients of the wave equation
     dx      : the spatial grid size
     dt      : the time grid size
-    nsteps  : the number of time steps to store
+    nsteps  : the number of time steps to make
     returns data, the solution in the form of an nsteps x 2 x N array
     """
     data = np.zeros(((nsteps+1,)+initial.shape))
     data[0, :, :] = initial
     for i in range(1, nsteps+1):
         data[i, :, :] = rk4(data[i-1, :, :], coefs, dt, dx, tds)
-        # print("wave1dsolve(): step "+str(i))
+        print("wave1dsolve(): step "+str(i))
     print("Finished evolution at t = "+str(dt*nsteps*tds))
     return data
