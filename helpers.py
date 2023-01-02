@@ -105,17 +105,17 @@ def set_coefs(r, ell, re=1, rc=10, L=1,coord = 'Parikh',metric = 'dS'):
     # Coefficients for Schwarzschild-de Sitter wave equation in hyperboloidal coordinates
     if metric == 'dS':
         if (coord == 'P'):
-            coefs[0, :] = 2*r/L
+            coefs[0, :] = -2*r/L
             coefs[1, :] = 1-r**2/L**2
             coefs[2, :] = -1/L
             coefs[3, :] = -2*r/L**2
-            coefs[4, :] = -2/L**2 #+ ell**2/r**2
+            coefs[4, :] = 2/L**2 #- ell**2/r**2
         elif (coord == 'E'):
-            coefs[0, :] = 2*r**2/(L**2+r**2)
-            coefs[1, :] = -1 + 2*L**2/(L**2+r**2)
+            coefs[0, :] = -2*r**2/(L**2+r**2)
+            coefs[1, :] = -1 + (2*L**2)/(L**2+r**2)
             coefs[2, :] = -2*r/(L**2+r**2)
             coefs[3, :] = -2*r/(L**2+r**2)
-            coefs[4, :] = (ell**2*L**2 -2*r**2)/(L**2*r**2 + r**4)
+            coefs[4, :] = 2/(L**2+r**2) #+ ell**2/(L**2+r**2)- ell**2/r**2
     elif metric == 'SdS':
         ldS2 = re**2 + re*rc + rc**2
         if (coord == 'choice1'):
@@ -161,7 +161,7 @@ def wave1drhs(u, coefs, dx):
     # Wave equation
     rhs[1, :] = coefs[0, :]*diff1_o4(u[1, :], dx) + coefs[1, :]*diff2_o4(u[0, :], dx)\
         + coefs[2, :]*u[1, :] + coefs[3, :]*diff1_o4(u[0, :], dx) \
-        + coefs[4, :]*u[0, :]
+        + coefs[4, :]*u[0, :] 
     return rhs
 
 

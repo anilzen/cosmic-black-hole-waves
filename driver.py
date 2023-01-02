@@ -7,13 +7,13 @@ from matplotlib.animation import FuncAnimation
 def grid(metric):
     re = 1
     rc = 10
-    L = 5
+    L = 10
 
     if metric == 'dS':
         n = 251                  # spatial grid points
         x = np.linspace(0, L, n)     # the grid
         hgx = L/(n-1)      # spatial grid spacing
-        hgt = 0.01               # time step
+        hgt = 0.02             # time step
 
         endtime = 50            # end time
         tds = 2                 # downsampling in time
@@ -46,10 +46,9 @@ def grid(metric):
 
 
 metric = 'dS'
-coord = 'P'
+coord = 'E'
 
 initial, x,  hgx, hgt, tds, nsteps, L, re, rc = grid(metric)
-print(L)
 # Coefficients
 ell = 0  # the spherical harmonic mode
 coefs = set_coefs(x, ell, re, rc, L, coord, metric)
